@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "src/Multi165.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.13;\n\ninterface IERC165 {function supportsInterface(bytes4 interfaceId) external view returns (bool);}\n\n\nlibrary Address {\n    function isContract(address account) internal view returns (bool) {\n        uint256 size;\n        assembly {\n            size := extcodesize(account)\n        }\n        return size > 0;\n    }\n}\n\ncontract Multi165 {\n\n    function supportsInterface(IERC165[] calldata contracts, bytes4 interfaceId) public view returns (bool[] memory result) {\n        result = new bool[](contracts.length);\n        for(uint256 i = 0; i < contracts.length; i++) {\n            if (!Address.isContract(address(contracts[i]))) {\n                continue;\n            }\n            try contracts[i].supportsInterface{gas: 30000}(interfaceId) returns (bool a) {\n                result[i] = a;\n            } catch {\n                // ensure there was enough gas ( >= 30,000) given to the `supportsInterface` call\n                // Note that `{gas: 30000}` do not ensure that, it only protect the caller to not spend more than 30,000.\n                assert(gasleft() > 476); // 30,000 / 63\n            }\n        }\n    }\n\n    function supportsMultipleInterfaces(IERC165[] calldata contracts, bytes4[] calldata interfaceIds) public view returns (bool[] memory result) {\n        result = new bool[](contracts.length);\n        uint256 numI = contracts.length;\n        for(uint256 i = 0; i < numI; i++) {\n            if (!Address.isContract(address(contracts[i]))) {\n                continue;\n            }\n\n            // asume true and set to false once one interfaceId is found to be not supported.\n            result[i] = true;\n            uint256 numJ = interfaceIds.length;\n            for (uint256 j = 0; j < numJ; j ++) {\n                bytes4 interfaceId = interfaceIds[j];\n                try contracts[i].supportsInterface{gas: 30000}(interfaceId) returns (bool a) {\n                    if (!a) {\n                        result[i] = false;\n                        break;\n                    }\n                } catch {\n                    // ensure there was enough gas ( >= 30,000) given to the `supportsInterface` call\n                    // Note that `{gas: 30000}` do not ensure that, it only protect the caller to not spend more than 30,000.\n                    assert(gasleft() > 476); // 30,000 / 63\n                    result[i] = false;\n                    break;\n                }\n            }\n        }\n    }\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
