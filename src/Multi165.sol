@@ -25,8 +25,8 @@ contract Multi165 {
             try contracts[i].supportsInterface{gas: 30000}(interfaceId) returns (bool a) {
                 result[i] = a;
             } catch {
-                // ensure there was enough gas ( >= 30,000) given to the call to supportsInterfaceelf, it only protect the caller
-                // Note that `{gas: 30000}` do not ensure that by its
+                // ensure there was enough gas ( >= 30,000) given to the `supportsInterface` call
+                // Note that `{gas: 30000}` do not ensure that, it only protect the caller to not spend more than 30,000.
                 assert(gasleft() > 476); // 30,000 / 63
             }
         }
@@ -37,10 +37,10 @@ contract Multi165 {
         uint256 numI = contracts.length;
         for(uint256 i = 0; i < numI; i++) {
             if (!Address.isContract(address(contracts[i]))) {
-                result[i] = false;
                 continue;
             }
 
+            // asume true and set to false once one interfaceId is found to be not supported.
             result[i] = true;
             uint256 numJ = interfaceIds.length;
             for (uint256 j = 0; j < numJ; j ++) {
@@ -51,9 +51,9 @@ contract Multi165 {
                         break;
                     }
                 } catch {
-                    // ensure there was enough gas ( >= 30,000) given to the call to supportsInterfaceelf, it only protect the caller
-                    // Note that `{gas: 30000}` do not ensure that by its
-                    assert(gasleft() > 476); // 30000 / 63
+                    // ensure there was enough gas ( >= 30,000) given to the `supportsInterface` call
+                    // Note that `{gas: 30000}` do not ensure that, it only protect the caller to not spend more than 30,000.
+                    assert(gasleft() > 476); // 30,000 / 63
                     result[i] = false;
                     break;
                 }

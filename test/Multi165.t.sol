@@ -70,23 +70,23 @@ contract Multi165Test is Test {
         multi165 = new Multi165();
     }
 
-    // function testOutOfGas() public {
-    //     IERC165[] memory contracts = new IERC165[](1);
-    //     contracts[0] = new OutOfGasMock();
-    //     uint256 gas = gasleft();
-    //     bool[] memory result = multi165.supportsInterface(contracts, 0xdddddddd);
-    //     console.log(gas - gasleft());
-    //     assertFalse(result[0]);
-    // }
+    function testOutOfGas() public {
+        IERC165[] memory contracts = new IERC165[](1);
+        contracts[0] = new OutOfGasMock();
+        uint256 gas = gasleft();
+        bool[] memory result = multi165.supportsInterface(contracts, 0xdddddddd);
+        console.log(gas - gasleft());
+        assertFalse(result[0]);
+    }
 
-    // function testOne() public {
-    //     IERC165[] memory contracts = new IERC165[](1);
-    //     bytes4[] memory ids = new bytes4[](1);
-    //     ids[0] = 0xdddddddd;
-    //     contracts[0] = new Mock(ids);
-    //     bool[] memory result = multi165.supportsInterface(contracts, 0xdddddddd);
-    //     assertTrue(result[0]);
-    // }
+    function testOne() public {
+        IERC165[] memory contracts = new IERC165[](1);
+        bytes4[] memory ids = new bytes4[](1);
+        ids[0] = 0xdddddddd;
+        contracts[0] = new Mock(ids);
+        bool[] memory result = multi165.supportsInterface(contracts, 0xdddddddd);
+        assertTrue(result[0]);
+    }
 
     function testLowGas() public {
         IERC165[] memory contracts = new IERC165[](1);
@@ -98,92 +98,92 @@ contract Multi165Test is Test {
         assertFalse(result[0]);
     }
 
-    // function test() public {
-    //     IERC165[] memory contracts = new IERC165[](7);
-    //     contracts[0] = new OutOfGasMock();
-    //     contracts[1] = new OutOfGasMock();
-    //     contracts[2] = new OutOfGasMock();
-    //     contracts[3] = IERC165(address(1));
-    //     contracts[4] = IERC165(address(0));
+    function test() public {
+        IERC165[] memory contracts = new IERC165[](7);
+        contracts[0] = new OutOfGasMock();
+        contracts[1] = new OutOfGasMock();
+        contracts[2] = new OutOfGasMock();
+        contracts[3] = IERC165(address(1));
+        contracts[4] = IERC165(address(0));
 
-    //     bytes4[] memory ids = new bytes4[](1);
-    //     ids[0] = 0xdddddddd;
-    //     contracts[5] = new Mock(ids);
+        bytes4[] memory ids = new bytes4[](1);
+        ids[0] = 0xdddddddd;
+        contracts[5] = new Mock(ids);
         
-    //     contracts[6] = new Mock(new bytes4[](0));
+        contracts[6] = new Mock(new bytes4[](0));
         
-    //     bool[] memory result = multi165.supportsInterface(contracts, 0xdddddddd);
+        bool[] memory result = multi165.supportsInterface(contracts, 0xdddddddd);
         
-    //     assertFalse(result[0]);
-    //     assertFalse(result[1]);
-    //     assertFalse(result[2]);
-    //     assertFalse(result[3]);
-    //     assertFalse(result[4]);
-    //     assertTrue(result[5]);
-    //     assertFalse(result[6]);
-    // }
+        assertFalse(result[0]);
+        assertFalse(result[1]);
+        assertFalse(result[2]);
+        assertFalse(result[3]);
+        assertFalse(result[4]);
+        assertTrue(result[5]);
+        assertFalse(result[6]);
+    }
 
 
-    // function testContracts() public {
-    //     IERC165[] memory contracts = new IERC165[](7);
-    //     contracts[0] = new OutOfGasMock();
-    //     contracts[1] = new OutOfGasMock();
-    //     contracts[2] = new OutOfGasMock();
+    function testContracts() public {
+        IERC165[] memory contracts = new IERC165[](7);
+        contracts[0] = new OutOfGasMock();
+        contracts[1] = new OutOfGasMock();
+        contracts[2] = new OutOfGasMock();
         
-    //     bytes4[] memory ids = new bytes4[](1);
-    //     ids[0] = 0xdddddddd;
-    //     contracts[5] = new Mock(ids);
+        bytes4[] memory ids = new bytes4[](1);
+        ids[0] = 0xdddddddd;
+        contracts[5] = new Mock(ids);
         
-    //     contracts[6] = new Mock(new bytes4[](0));
+        contracts[6] = new Mock(new bytes4[](0));
 
-    //     contracts[3] = contracts[5];
-    //     contracts[4] = contracts[6];
+        contracts[3] = contracts[5];
+        contracts[4] = contracts[6];
 
         
-    //     bool[] memory result = multi165.supportsInterface(contracts, 0xdddddddd);
+        bool[] memory result = multi165.supportsInterface(contracts, 0xdddddddd);
         
-    //     assertFalse(result[0]);
-    //     assertFalse(result[1]);
-    //     assertFalse(result[2]);
-    //     assertTrue(result[3]);
-    //     assertFalse(result[4]);
-    //     assertTrue(result[5]);
-    //     assertFalse(result[6]);
-    // }
+        assertFalse(result[0]);
+        assertFalse(result[1]);
+        assertFalse(result[2]);
+        assertTrue(result[3]);
+        assertFalse(result[4]);
+        assertTrue(result[5]);
+        assertFalse(result[6]);
+    }
 
-    // function testMultiInterfaces() public {
-    //     IERC165[] memory contracts = new IERC165[](8);
-    //     contracts[0] = new OutOfGasMock();
-    //     contracts[1] = new OutOfGasMock();
-    //     contracts[2] = new OutOfGasMock();
-    //     contracts[3] = IERC165(address(1));
-    //     contracts[4] = IERC165(address(0));
+    function testMultiInterfaces() public {
+        IERC165[] memory contracts = new IERC165[](8);
+        contracts[0] = new OutOfGasMock();
+        contracts[1] = new OutOfGasMock();
+        contracts[2] = new OutOfGasMock();
+        contracts[3] = IERC165(address(1));
+        contracts[4] = IERC165(address(0));
 
-    //     bytes4[] memory ids = new bytes4[](1);
-    //     ids[0] = 0xdddddddd;
-    //     contracts[5] = new Mock(ids);
+        bytes4[] memory ids = new bytes4[](1);
+        ids[0] = 0xdddddddd;
+        contracts[5] = new Mock(ids);
         
-    //     contracts[6] = new Mock(new bytes4[](0));
+        contracts[6] = new Mock(new bytes4[](0));
 
-    //     ids = new bytes4[](3);
-    //     ids[0] = 0xdddddddd;
-    //     ids[1] = 0xdddddde1;
-    //     ids[2] = 0xdddddde2;
-    //     contracts[7] = new Mock(ids);
+        ids = new bytes4[](3);
+        ids[0] = 0xdddddddd;
+        ids[1] = 0xdddddde1;
+        ids[2] = 0xdddddde2;
+        contracts[7] = new Mock(ids);
         
-    //     ids = new bytes4[](2);
-    //     ids[0] = 0xdddddddd;
-    //     ids[1] = 0xdddddde1;
-    //     bool[] memory result = multi165.supportsMultipleInterfaces(contracts, ids);
+        ids = new bytes4[](2);
+        ids[0] = 0xdddddddd;
+        ids[1] = 0xdddddde1;
+        bool[] memory result = multi165.supportsMultipleInterfaces(contracts, ids);
         
-    //     assertFalse(result[0]);
-    //     assertFalse(result[1]);
-    //     assertFalse(result[2]);
-    //     assertFalse(result[3]);
-    //     assertFalse(result[4]);
-    //     assertFalse(result[5]);
-    //     assertFalse(result[6]);
-    //     assertTrue(result[7]);
-    // }
+        assertFalse(result[0]);
+        assertFalse(result[1]);
+        assertFalse(result[2]);
+        assertFalse(result[3]);
+        assertFalse(result[4]);
+        assertFalse(result[5]);
+        assertFalse(result[6]);
+        assertTrue(result[7]);
+    }
     
 }
