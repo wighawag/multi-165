@@ -1,0 +1,38 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "src/Multi165.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.13;\n\ninterface IERC165 {function supportsInterface(bytes4 interfaceId) external view returns (bool);}\n\ncontract Multi165 {\n\n    function supportsInterface(IERC165[] calldata contracts, bytes4 interfaceId) public view returns (bool[] memory result) {\n        result = new bool[](contracts.length);\n        bytes memory callData = new bytes(36);\n        assembly {            \n            mstore(add(callData, 32), 0x01ffc9a700000000000000000000000000000000000000000000000000000000)\n            mstore(add(callData, 36), interfaceId)\n        }\n        for(uint256 i = 0; i < contracts.length; i++) {\n            (bool success, bytes memory returndata) = address(contracts[i]).staticcall{gas: 30000}(callData);\n            // ensure there was enough gas ( >= 30,000) given to the `supportsInterface` call\n            // Note that `{gas: 30000}` do not ensure that, it only protect the caller to not spend more than 30,000.\n            assert(gasleft() > 476); // 30,000 / 63\n            if (success && returndata.length > 0 && returndata.length < 33) {\n                bytes32 data;\n                assembly {\n                        data := mload(add(returndata, 32))\n                }\n                result[i] = uint256(data) != 0;\n            }\n        }\n    }\n\n    function supportsMultipleInterfaces(IERC165[] calldata contracts, bytes4[] calldata interfaceIds) public view returns (bool[] memory result) {\n        result = new bool[](contracts.length);\n        uint256 numI = contracts.length;\n        for(uint256 i = 0; i < numI; i++) {\n            // asume true and set to false once one interfaceId is found to be not supported.\n            result[i] = true;\n            uint256 numJ = interfaceIds.length;\n            for (uint256 j = 0; j < numJ; j ++) {\n                bytes4 interfaceId = interfaceIds[j];\n                bytes memory callData = new bytes(36);\n                assembly {            \n                    mstore(add(callData, 32), 0x01ffc9a700000000000000000000000000000000000000000000000000000000)\n                    mstore(add(callData, 36), interfaceId)\n                }\n                (bool success, bytes memory returndata) = address(contracts[i]).staticcall{gas: 30000}(callData);\n                // ensure there was enough gas ( >= 30,000) given to the `supportsInterface` call\n                // Note that `{gas: 30000}` do not ensure that, it only protect the caller to not spend more than 30,000.\n                assert(gasleft() > 476); // 30,000 / 63\n                \n                if (!success || returndata.length == 0 || returndata.length > 32) {\n                    result[i] = false;\n                    break;\n                }\n                bytes32 data;\n                assembly {\n                        data := mload(add(returndata, 32))\n                }\n                if(uint256(data) == 0) {\n                    result[i] = false;\n                    break;\n                }\n            }\n        }\n    }\n}"
+    },
+    "src/SafeMulticall.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.13;\n\ncontract SafeMulticall {\n\n    struct Call {\n        address target;\n        bytes callData;\n        uint256 gas;\n    }\n\n    struct Result {\n        bool success;\n        bytes returnData;\n    }\n\n    // TODO add blockNumber / blockHash in the result ?\n    function aggregateSameCallAcrossManyContracts(address[] calldata contracts, bytes calldata callData, uint256 gasLimit) public view returns (Result[] memory results) {\n        results = new Result[](contracts.length);\n        for(uint256 i = 0; i < contracts.length; i++) {\n            (bool success, bytes memory returndata) = address(contracts[i]).staticcall{gas: gasLimit}(callData);\n            // ensure there was enough gas ( >= gasLimit) given to the `supportsInterface` call\n            // Note that `{gas: gasLimit}` do not ensure that, it only protect the caller to not spend more than gasLimit\n            assert(gasleft() > gasLimit / 63);\n            results[i].success = success;\n            results[i].returnData = returndata;\n        }\n    }\n\n    function aggregate(Call[] calldata calls) public view returns (Result[] memory results) {\n        results = new Result[](calls.length);\n        for(uint256 i = 0; i < calls.length; i++) {\n            uint256 gasLimit = calls[i].gas;\n            (bool success, bytes memory returndata) = address(calls[i].target).staticcall{gas: gasLimit}(calls[i].callData);\n            // ensure there was enough gas ( >= gasLimit) given to the `supportsInterface` call\n            // Note that `{gas: gasLimit}` do not ensure that, it only protect the caller to not spend more than gasLimit\n            assert(gasleft() > gasLimit / 63);\n            results[i].success = success;\n            results[i].returnData = returndata;\n        }\n    }\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
