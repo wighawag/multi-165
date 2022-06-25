@@ -2,7 +2,7 @@ require('hardhat-deploy');
 const {addForkConfiguration, node_url, accounts} = require('./utils/network')
 
 module.exports = {
-    solidity: "0.8.15",
+    solidity: "0.8.13",
 
     networks: addForkConfiguration({
       localhost: {
