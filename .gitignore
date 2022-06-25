@@ -1,3 +1,7 @@
 cache/
 out/
-broadcast
+broadcast/
+artifacts/
+.env*
+!*.default
+node_modules/
