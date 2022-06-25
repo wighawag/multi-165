@@ -20,13 +20,14 @@ contract Multi165 {
         result = new bool[](contracts.length);
         for(uint256 i = 0; i < contracts.length; i++) {
             if (!Address.isContract(address(contracts[i]))) {
-                result[i] = false;
                 continue;
             }
-            try contracts[i].supportsInterface{gas: 31000}(interfaceId) returns (bool a) {
+            try contracts[i].supportsInterface{gas: 30000}(interfaceId) returns (bool a) {
                 result[i] = a;
             } catch {
-                result[i] = false;
+                // ensure there was enough gas ( >= 30,000) given to the call to supportsInterfaceelf, it only protect the caller
+                // Note that `{gas: 30000}` do not ensure that by its
+                assert(gasleft() > 476); // 30,000 / 63
             }
         }
     }
@@ -44,12 +45,15 @@ contract Multi165 {
             uint256 numJ = interfaceIds.length;
             for (uint256 j = 0; j < numJ; j ++) {
                 bytes4 interfaceId = interfaceIds[j];
-                try contracts[i].supportsInterface{gas: 31000}(interfaceId) returns (bool a) {
+                try contracts[i].supportsInterface{gas: 30000}(interfaceId) returns (bool a) {
                     if (!a) {
                         result[i] = false;
                         break;
                     }
                 } catch {
+                    // ensure there was enough gas ( >= 30,000) given to the call to supportsInterfaceelf, it only protect the caller
+                    // Note that `{gas: 30000}` do not ensure that by its
+                    assert(gasleft() > 476); // 30000 / 63
                     result[i] = false;
                     break;
                 }
