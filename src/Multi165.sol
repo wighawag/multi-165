@@ -27,7 +27,7 @@ contract Multi165 {
         }
     }
 
-    function supportsMultipleInterfaces(IERC165[] calldata contracts, bytes4[] calldata interfaceIds) public view returns (bool[] memory result) {
+    function supportsAllInterfaces(IERC165[] calldata contracts, bytes4[] calldata interfaceIds) public view returns (bool[] memory result) {
         result = new bool[](contracts.length);
         uint256 numI = contracts.length;
         for(uint256 i = 0; i < numI; i++) {
@@ -59,6 +59,35 @@ contract Multi165 {
                     break;
                 }
             }
+        }
+    }
+
+    function supportsInterfaces(IERC165[] calldata contracts, bytes4[] calldata interfaceIds) public view returns (bool[][] memory result) {
+        result = new bool[][](contracts.length);
+        uint256 numI = contracts.length;
+        for(uint256 i = 0; i < numI; i++) {
+            uint256 numJ = interfaceIds.length;
+            bool[] memory subResult = new bool[](interfaceIds.length);
+            for (uint256 j = 0; j < numJ; j ++) {
+                bytes4 interfaceId = interfaceIds[j];
+                bytes memory callData = new bytes(36);
+                assembly {            
+                    mstore(add(callData, 32), 0x01ffc9a700000000000000000000000000000000000000000000000000000000)
+                    mstore(add(callData, 36), interfaceId)
+                }
+                (bool success, bytes memory returndata) = address(contracts[i]).staticcall{gas: 30000}(callData);
+                // ensure there was enough gas ( >= 30,000) given to the `supportsInterface` call
+                // Note that `{gas: 30000}` do not ensure that, it only protect the caller to not spend more than 30,000.
+                assert(gasleft() > 476); // 30,000 / 63
+                if (success && returndata.length > 0 && returndata.length < 33) {
+                    bytes32 data;
+                    assembly {
+                            data := mload(add(returndata, 32))
+                    }
+                    subResult[j] = uint256(data) != 0;
+                }
+            }
+            result[i] = subResult;
         }
     }
 }
